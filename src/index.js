@@ -14,9 +14,18 @@ input.addEventListener('input', debounce(onInputChange, DEBOUNCE_DELAY));
 
 function onInputChange(e) {
   const value = e.target.value.trim();
-  fetchCountry(value).then(data => {
-    return renderCountry(data);
-  });
+  if (input.value === '') {
+    list.innerHTML = '';
+    card.innerHTML = '';
+    return;
+  }
+  fetchCountry(value)
+    .then(data => {
+      renderCountry(data);
+    })
+    .catch(error => {
+      Notify.failure('Oops, there is no country with that name');
+    });
 }
 
 const renderList = data => {
@@ -73,9 +82,5 @@ function renderCountry(data) {
     renderCard(data);
   } else if (data.length > 10) {
     Notify.info('Too many matches found. Please enter a more specific name.');
-  } else {
-    list.innerHTML = '';
-    card.innerHTML = '';
-    Notify.failure('Oops, there is no country with that name');
   }
 }
